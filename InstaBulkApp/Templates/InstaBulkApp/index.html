@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% load static %}
+
+    <link rel="icon" href="{% static 'InstaBulkApp/instaIcon.png' %}" sizes="16x16">
+
+    <!-- <link rel="stylesheet" href="{% static 'InstaDownloadApp/style.css' %}"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+        
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+        <style>
+            .Nav_Bar{
+                background-color: #37474F;
+                padding: 3%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .navIcon{
+                height: 70px;
+                width: 70px;
+                margin-right: 10px;
+            }
+
+            .download_container{
+                border: 2px solid grey;
+                border-radius: 5%;
+                padding: 1%;
+                text-align: center;
+            }
+
+            .image_sizing{
+                height: 220px;
+                width: 170px;
+                object-fit: contain;
+            }
+
+            .Button_{
+                margin-top: 10%;
+                margin-bottom: 5%;
+                background-color: #00897B;
+                color: #f9f9f9
+            }
+
+            .Button_Download{
+                margin-top: 10%;
+                margin-bottom: 5%;
+                background-color: #00897B;
+                color: #f9f9f9
+            }
+
+            .Big_Button{
+                background-color: #00897B;
+                color: #f9f9f9;
+                padding-top: 10px; 
+                padding-bottom: 10px
+            }
+
+            .Header_{
+                color:#f9f9f9
+            }
+
+            .searchContainer{
+                padding: 5%;
+            }
+
+            .ButtonSearch{
+                background-color: #00897B;
+                color: #f9f9f9;
+            }
+
+            @media screen and (max-width: 520px) {
+                .Header_{
+                    font-size: 20px;
+                }
+
+                .navIcon{
+                    height: 40px;
+                    width: 40px;
+                }
+
+                h1{
+                    font-size: 20px;
+                }
+            }
+        </style>
+</head>
+
+<body style="overflow-x: hidden;">
+
+    <div class="Nav_Bar">
+        <img class="navIcon" src = "{% static 'InstaBulkApp/instaLogo2.png' %}" >
+        <h2 class="Header_">Instagram Bulk Downloader</h2>
+    </div>
+
+    <form class="searchContainer" method="POST">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <input class="form-control col-xl-3 col-lg-4 col-md-4 col-6" placeholder="Enter @Username" style="border: 1px solid black;" name="Username">
+        </div>
+        
+        <div class="row justify-content-center" style="margin-top:1%">
+            <button type="submit" class="btn ButtonSearch col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4">Search</button>
+        </div>
+
+    </form>
+
+    {% if Next %}
+    <form class="row justify-content-center" style="padding-bottom: 1%" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="prevPage" id="prevPage" value="{{prevPage}}">
+        <input type="hidden" name="downloadNext" id="downloadNext" value="{{nextPage}}">
+        <input type="hidden" name="downloadUser" id="downloadUser" value="{{username}}">
+        <button type="submit" class="btn Big_Button col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4">Download All</button>
+    </form>
+    {% endif %}
+
+    <div class="row justify-content-center" style="padding-bottom: 2%"> 
+
+        {%if data is False %}
+            <h1>Account not Found or private</h1>
+
+        {% else %}
+            {% for i in data %}
+            <div class="download_container col-xl-2 col-lg-3 col-md-3 col-sm-4 col-7 ml-4 mu-2 mt-4">
+                
+                {%if '.mp4?' in i %}
+                    <video class="image_sizing" controls>
+                        <source src="{{i}}">
+                    </video>
+                
+                {% else %}
+                    <img class="image_sizing" src = "{{i}}">
+
+                {% endif %}
+
+                <a class="btn Button_" href="{{i}}&dl=1" download="image">Download</a>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% if Next %}
+    <form class="row justify-content-center" style="padding-top: 1%; padding-bottom: 1%" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="next" id="next" value="{{nextPage}}">
+        <input type="hidden" name="currentUser" id="currentUser" value="{{username}}">
+        <button type="submit" class="btn Big_Button col-xl-2 col-lg-2 col-md-2 col-sm-2 col-4">Next</button>
+    </form>
+    {% endif %}
+
+     {% if DownloadAll %}
+        {% for i in data %}
+            <a style="display:None" class="btn Button_Download" id="{{ forloop.counter0 }}" href="{{i}}&dl=1" download="image"></a>
+        {% endfor %}
+
+        {% block javascript %}
+        <script>
+            var i = 0;
+
+            function myLoop() {         
+                setTimeout(function () {   
+                    var a_element = document.getElementById(i + "");
+                    var href = a_element.href;
+
+                    if(href.includes(".mp4?")){
+                        window.open(href, "_blank");
+                    }
+
+                    else{
+                        a_element.click();
+                    }
+
+                    i++;
+                    if (i < $('.Button_Download').length) {  
+                        myLoop();
+                    }
+                }, 3000)
+            }
+
+            myLoop(); 
+            
+        </script>
+        {% endblock javascript %}
+    {% endif %}
+</body>
+
+</html>
